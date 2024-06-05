@@ -1,5 +1,4 @@
-import React from "react";
-import { useLoaderData, useParams } from "react-router-dom";
+import { Link, useLoaderData, useParams } from "react-router-dom";
 
 interface User {
   id: number;
@@ -23,6 +22,19 @@ function UsersDetailPage() {
       <h1>{user.name}</h1>
       <p>Username:{user.name}</p>
       <p>Email:{user.email}</p>
+      <nav>
+        <ul>
+          <li>
+            <Link to={`/users/${userId}/posts`}>Posts</Link>
+          </li>
+          <li>
+            <Link to={`/users/${userId}/albums`}>Albums</Link>
+          </li>
+          <li>
+            <Link to={`/users/${userId}/todos`}>Todos</Link>
+          </li>
+        </ul>
+      </nav>
     </>
   );
 }

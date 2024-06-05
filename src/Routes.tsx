@@ -3,7 +3,11 @@ import { HomePage, RootLayout, UsersPage } from "./pages";
 import { usersLoader } from "./pages/UsersPage";
 import UsersDetailPage from "./pages/UsersDetailPage";
 import { userLoader } from "./pages/UsersDetailPage";
-
+import { UserAlbums, UserPosts, UserTodos } from "./pages/userinfo";
+import { userPostsLoader } from "./pages/userinfo/UserPosts";
+import { usersAlbumsLoader } from "./pages/userinfo/UserAlbums";
+import { userTodosLoader } from "./pages/userinfo/UserTodos";
+import "./routes.css";
 const routes = [
   {
     path: "/",
@@ -20,8 +24,17 @@ const routes = [
       },
       {
         path: "users/:userId",
-        element: <UsersDetailPage />,
-        loader: userLoader,
+
+        children: [
+          { index: true, element: <UsersDetailPage />, loader: userLoader },
+          { path: "posts", element: <UserPosts />, loader: userPostsLoader },
+          {
+            path: "albums",
+            element: <UserAlbums />,
+            loader: usersAlbumsLoader,
+          },
+          { path: "todos", element: <UserTodos />, loader: userTodosLoader },
+        ],
       },
     ],
   },
