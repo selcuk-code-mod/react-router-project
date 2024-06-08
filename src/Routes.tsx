@@ -6,6 +6,7 @@ import { userLoader } from "./pages/UserDetailPage";
 import {
   UserAlbums,
   UserComments,
+  UserPhotos,
   UserPosts,
   UserTodos,
   UsersPDetailPage,
@@ -16,6 +17,7 @@ import { userTodosLoader } from "./pages/userinfo/UserTodos";
 import { userPostChangeLoader } from "./pages/userinfo/UsersPDetailPage";
 import "./routes.css";
 import { CommentDataLoader } from "./pages/userinfo/UserComments";
+import { userPhotosData } from "./pages/userinfo/UserPhotos";
 const routes = [
   {
     path: "/",
@@ -53,9 +55,22 @@ const routes = [
           },
           {
             path: "albums",
-            element: <UserAlbums />,
-            loader: usersAlbumsLoader,
+
+            children: [
+              {
+                index: true,
+                element: <UserAlbums />,
+                loader: usersAlbumsLoader,
+              },
+
+              {
+                path: ":albumId/photos",
+                element: <UserPhotos />,
+                loader: userPhotosData,
+              },
+            ],
           },
+
           { path: "todos", element: <UserTodos />, loader: userTodosLoader },
         ],
       },
