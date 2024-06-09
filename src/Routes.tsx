@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { HomePage, RootLayout, UsersPage } from "./pages";
+import { HomePage, UsersPage } from "./pages";
 import { usersLoader } from "./pages/UsersPage";
 import UsersDetailPage from "./pages/UserDetailPage";
 import { userLoader } from "./pages/UserDetailPage";
@@ -15,9 +15,11 @@ import { userPostsLoader } from "./pages/userinfo/UserPosts";
 import { usersAlbumsLoader } from "./pages/userinfo/UserAlbums";
 import { userTodosLoader } from "./pages/userinfo/UserTodos";
 import { userPostChangeLoader } from "./pages/userinfo/UsersPDetailPage";
-import "./routes.css";
 import { CommentDataLoader } from "./pages/userinfo/UserComments";
 import { userPhotosData } from "./pages/userinfo/UserPhotos";
+import RootLayout from "./pages/root";
+import FavoritesPage from "./pages/userinfo/FavoritesPage";
+import "./routes.css";
 const routes = [
   {
     path: "/",
@@ -33,8 +35,11 @@ const routes = [
         loader: usersLoader,
       },
       {
+        path: "favorites",
+        element: <FavoritesPage />, // Favoriler sayfasını ekleyin
+      },
+      {
         path: "users/:userId",
-
         children: [
           { index: true, element: <UsersDetailPage />, loader: userLoader },
           { path: "posts", element: <UserPosts />, loader: userPostsLoader },
@@ -55,14 +60,12 @@ const routes = [
           },
           {
             path: "albums",
-
             children: [
               {
                 index: true,
                 element: <UserAlbums />,
                 loader: usersAlbumsLoader,
               },
-
               {
                 path: ":albumId/photos",
                 element: <UserPhotos />,
@@ -70,7 +73,6 @@ const routes = [
               },
             ],
           },
-
           { path: "todos", element: <UserTodos />, loader: userTodosLoader },
         ],
       },

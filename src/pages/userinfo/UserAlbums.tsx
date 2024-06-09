@@ -45,11 +45,10 @@ function UserAlbums() {
       <ul>
         {albumsWithUsers.map((album) => (
           <li key={album.id}>
-            <Link to={`/users/${album.userId}/albums/${album.id}/photos`}>
+            <Link to={`/users/${userId}/albums/${album.id}/photos`}>
               {album.title}
             </Link>
             <br />
-
             <small>
               <Link to={`/users/${album.userId}`}>{album.user.name}</Link>
             </small>
