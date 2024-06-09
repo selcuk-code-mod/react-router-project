@@ -1,53 +1,61 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useReducer } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// FavoritesContext.tsx
+import React, { createContext, useContext, useReducer, ReactNode } from "react";
 
 interface Photo {
-  userId: number;
   albumId: number;
   id: number;
   title: string;
   url: string;
   thumbnailUrl: string;
+  userId: number;
 }
 
 interface FavoritesState {
   photos: Photo[];
 }
 
-const initialState: FavoritesState = {
-  photos: [],
-};
+interface FavoritesAction {
+  type: "ADD_FAVORITE" | "REMOVE_FAVORITE";
+  photo?: Photo;
+  photoId?: number;
+}
 
-type Action =
-  | { type: "ADD_FAVORITE"; photo: Photo }
-  | { type: "REMOVE_FAVORITE"; photoId: number };
+const FavoritesContext = createContext<
+  | {
+      state: FavoritesState;
+      dispatch: React.Dispatch<FavoritesAction>;
+    }
+  | undefined
+>(undefined);
 
-function favoritesReducer(
+const favoritesReducer = (
   state: FavoritesState,
-  action: Action
-): FavoritesState {
+  action: FavoritesAction
+): FavoritesState => {
   switch (action.type) {
     case "ADD_FAVORITE":
-      return { ...state, photos: [...state.photos, action.photo] };
+      if (action.photo) {
+        return { ...state, photos: [...state.photos, action.photo] };
+      }
+      return state;
     case "REMOVE_FAVORITE":
-      return {
-        ...state,
-        photos: state.photos.filter((photo) => photo.id !== action.photoId),
-      };
+      if (action.photoId !== undefined) {
+        return {
+          ...state,
+          photos: state.photos.filter((photo) => photo.id !== action.photoId),
+        };
+      }
+      return state;
     default:
       return state;
   }
-}
+};
 
-const FavoritesContext = createContext<{
-  state: FavoritesState;
-  dispatch: React.Dispatch<Action>;
-}>({ state: initialState, dispatch: () => null });
+export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
+  const [state, dispatch] = useReducer(favoritesReducer, { photos: [] });
 
-export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [state, dispatch] = useReducer(favoritesReducer, initialState);
   return (
     <FavoritesContext.Provider value={{ state, dispatch }}>
       {children}
@@ -55,4 +63,10 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const useFavorites = () => useContext(FavoritesContext);
+export const useFavorites = () => {
+  const context = useContext(FavoritesContext);
+  if (!context) {
+    throw new Error("useFavorites must be used within a FavoritesProvider");
+  }
+  return context;
+};

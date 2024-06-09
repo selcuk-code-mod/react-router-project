@@ -1,8 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useLoaderData, useParams } from "react-router-dom";
-import { useFavorites } from "../userinfo/FavoritesContext";
+import { useFavorites } from "./FavoritesContext";
 
 interface Photo {
   albumId: number;
@@ -12,12 +13,11 @@ interface Photo {
   thumbnailUrl: string;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const userPhotosData = async ({ params }: any) => {
   const response = await fetch(
     `https://jsonplaceholder.typicode.com/albums/${params.albumId}/photos`
   );
-  const photos: Photo[] = await response.json();
+  const photos = await response.json();
   return photos;
 };
 
@@ -26,59 +26,48 @@ function UserPhotos() {
   const { albumId } = useParams();
   const { state, dispatch } = useFavorites();
 
-  const isFavorite = (photoId: number) =>
-    state.photos.some((photo) => photo.id === photoId);
-
-  const addFavorite = (photo: Photo) => {
-    dispatch({ type: "ADD_FAVORITE", photo });
+  const isFavorite = (photoId: number) => {
+    return state.photos.some((photo) => photo.id === photoId);
   };
 
-  const removeFavorite = (photoId: number) => {
-    dispatch({ type: "REMOVE_FAVORITE", photoId });
+  const toggleFavorite = (photo: Photo) => {
+    if (isFavorite(photo.id)) {
+      dispatch({ type: "REMOVE_FAVORITE", photoId: photo.id });
+    } else {
+      dispatch({
+        type: "ADD_FAVORITE",
+        photo: { ...photo, userId: parseInt(albumId) },
+      });
+    }
   };
 
   return (
     <>
-      <h2>Photos</h2>
-      <ul>
+      <h1>Photos</h1>
+      <ul style={{ listStyle: "none", padding: 0 }}>
         {photos.map((photo) => (
-          <li key={photo.id} style={{ listStyle: "none" }}>
-            <div
+          <li
+            key={photo.id}
+            style={{ marginBottom: "20px", textAlign: "center" }}
+          >
+            <img
+              src={photo.url}
+              alt={photo.title}
+              style={{ width: "100%", maxWidth: "200px", height: "auto" }}
+            />
+            <p>{photo.title}</p>
+            <button
+              onClick={() => toggleFavorite(photo)}
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                flexDirection: "column",
+                fontSize: "50px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: isFavorite(photo.id) ? "red" : "grey",
               }}
             >
-              <div>
-                <img
-                  style={{ width: "200px" }}
-                  src={photo.url}
-                  alt={photo.title}
-                />
-              </div>
-              <div>
-                <p>{photo.title}</p>
-              </div>
-              <div>
-                <button
-                  style={{ marginTop: "20px", marginBottom: "20px" }}
-                  onClick={() =>
-                    isFavorite(photo.id)
-                      ? removeFavorite(photo.id)
-                      : addFavorite({
-                          ...photo,
-                          userId: parseInt(albumId || "0"),
-                        })
-                  }
-                >
-                  {isFavorite(photo.id)
-                    ? "Remove from Favorites"
-                    : "Add to Favorites"}
-                </button>
-              </div>
-            </div>
+              ♥
+            </button>
           </li>
         ))}
       </ul>
